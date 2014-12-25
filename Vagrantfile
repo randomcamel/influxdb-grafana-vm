@@ -43,7 +43,7 @@ Vagrant.configure(2) do |config|
         end
 
         service "influxdb" do
-          action :enable
+          action [:enable, :start]
         end
 
         package "nginx"
@@ -68,9 +68,19 @@ Vagrant.configure(2) do |config|
 
         bash "create database" do
           code <<-EOS
-            curl -X POST 'http://localhost:8086/db?u=root&p=root' -d '{"name": "metricsdb"}'}
-            curl -X POST 'http://localhost:8086/db?u=root&p=root' -d '{"name": "grafana"}'}
+            # this is where serverspec is useful: "service running" doesn't mean "listening for connections."
+            while true; do
+              curl -X POST 'http://localhost:8086/db?u=root&p=root' -d '{"name": "metricsdb"}'}
+              curl -X POST 'http://localhost:8086/db?u=root&p=root' -d '{"name": "grafana"}'}
+              if [ $? = 0 ]; then
+                break
+              else
+                sleep 1
+              fi
+            done
           EOS
+
+          timeout 300
         end
       RECIPE
     end
