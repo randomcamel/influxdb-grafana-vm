@@ -2,7 +2,7 @@
 
 require "influxdb"
 
-host = "192.168.11.159"
+host = "192.168.11.10"
 db = "metricsdb"
 
 client = InfluxDB::Client.new db, host: host
