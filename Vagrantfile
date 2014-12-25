@@ -20,8 +20,14 @@ Vagrant.configure(2) do |config|
     box.vm.provision :chef_apply do |chef|
       # chef.add_recipe "apt"
 
+      # note that on OS X you can just install from homebrew with 'package'.
       deb = "influxdb_latest_amd64.deb"
       local_file = "/tmp/#{deb}"
+
+      grafana_tar = "grafana-1.9.0.tar.gz"
+      grafana_file = "/tmp/#{grafana_tar}"
+      nginx_dir = "/usr/share/nginx/html"
+      config_js = IO.read("config.js")
 
       chef.recipe = <<-RECIPE
         remote_file "#{local_file}" do
@@ -36,7 +42,23 @@ Vagrant.configure(2) do |config|
           action :enable
         end
 
+        package "nginx"
 
+        remote_file "#{grafana_file}" do
+          source "http://grafanarel.s3.amazonaws.com/#{grafana_tar}"
+        end
+
+        execute "tar -C #{nginx_dir} -xzf #{grafana_file}"
+
+        execute "mv #{nginx_dir}/grafana-1.9.0 #{nginx_dir}/grafana" do
+          not_if { File.directory?("#{nginx_dir}/grafana") }
+        end
+
+        file "#{nginx_dir}/config.js" do
+          content <<-EOS
+          #{config_js}
+          EOS
+        end
       RECIPE
     end
   end 
