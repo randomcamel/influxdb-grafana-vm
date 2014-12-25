@@ -30,6 +30,10 @@ Vagrant.configure(2) do |config|
       config_js = IO.read("config.js")
 
       chef.recipe = <<-RECIPE
+        link "/etc/localtime" do
+          to "/usr/share/zoneinfo/America/Los_Angeles"
+        end
+
         remote_file "#{local_file}" do
           source "http://s3.amazonaws.com/influxdb/#{deb}"
         end
@@ -54,9 +58,18 @@ Vagrant.configure(2) do |config|
           not_if { File.directory?("#{nginx_dir}/grafana") }
         end
 
-        file "#{nginx_dir}/config.js" do
+        file "#{nginx_dir}/grafana/config.js" do
           content <<-EOS
           #{config_js}
+          EOS
+        end
+
+        package "curl"
+
+        bash "create database" do
+          code <<-EOS
+            curl -X POST 'http://localhost:8086/db?u=root&p=root' -d '{"name": "metricsdb"}'}
+            curl -X POST 'http://localhost:8086/db?u=root&p=root' -d '{"name": "grafana"}'}
           EOS
         end
       RECIPE

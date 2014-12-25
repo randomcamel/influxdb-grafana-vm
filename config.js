@@ -21,14 +21,14 @@ define(['settings'], function(Settings) {
       datasources: {
         metricsdb: {
           type: 'influxdb',
-          url: "http://localhost:8086/db/metricsdb",
+          url: "http://192.168.11.159:8086/db/metricsdb",
           username: 'root',
           password: 'root',
           "default": true
         },
         grafana: {
           type: 'influxdb',
-          url: "http://localhost:8086/db/grafana",
+          url: "http://192.168.11.159:8086/db/grafana",
           username: 'root',
           password: 'root',
           grafanaDB: true
@@ -45,7 +45,7 @@ define(['settings'], function(Settings) {
       },
 
       // default home dashboard
-      default_route: '/dashboard/file/default.json',
+      // default_route: '/dashboard/file/default.json',
 
       // set to false to disable unsaved changes warning
       unsaved_changes_warning: true,
