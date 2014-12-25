@@ -21,9 +21,8 @@ Vagrant.configure(2) do |config|
 
 
     box.vm.provision :chef_apply do |chef|
-      # chef.add_recipe "apt"
 
-      # note that on OS X you can just install from homebrew with 'package'.
+      # note that on OS X you can just install InfluxDB from homebrew with 'package'.
       deb = "influxdb_latest_amd64.deb"
       local_file = "/tmp/#{deb}"
 
